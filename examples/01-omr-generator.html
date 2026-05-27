@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenEduKit.js - Dynamic OMR Generator Demo</title>
+  
+  <!-- Import Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Library Styles -->
+  <link rel="stylesheet" href="../src/openedukit.css">
+  
+  <style>
+    /* Styling specific to the example/dashboard shell */
+    body {
+      font-family: 'Outfit', sans-serif;
+      background-color: #f1f5f9;
+      margin: 0;
+      padding: 0;
+    }
+    
+    .shell-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+    
+    .dashboard-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    
+    .dashboard-header h1 {
+      font-size: 32px;
+      font-weight: 800;
+      color: #0f172a;
+      margin: 0 0 10px 0;
+    }
+    
+    .dashboard-header p {
+      color: #475569;
+      font-size: 16px;
+      margin: 0;
+    }
+    
+    .control-panel {
+      background: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+      margin-bottom: 30px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      align-items: flex-end;
+    }
+    
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .form-group label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #334155;
+    }
+    
+    .form-group input, .form-group select {
+      padding: 10px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 14px;
+    }
+    
+    .action-btn {
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background-color 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    
+    .action-btn:hover {
+      background-color: #1d4ed8;
+    }
+    
+    .action-btn.secondary {
+      background-color: #0f172a;
+    }
+    
+    .action-btn.secondary:hover {
+      background-color: #1e293b;
+    }
+    
+    /* Highlight print styles */
+    .print-tip {
+      background-color: #eff6ff;
+      border-left: 4px solid #3b82f6;
+      padding: 15px;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 30px;
+      font-size: 14px;
+      color: #1e3a8a;
+    }
+
+    @media print {
+      .shell-container, .control-panel, .dashboard-header, .print-tip {
+        display: none !important;
+      }
+      body {
+        background-color: #fff !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="shell-container">
+    <div class="dashboard-header">
+      <h1>Dynamic OMR Sheet Generator</h1>
+      <p>Configure and print fully black-and-white, ink-optimized OMR answer sheets.</p>
+    </div>
+    
+    <div class="print-tip">
+      <strong>🖨️ Printing Tip:</strong> Click the <strong>Print Sheet</strong> button or press <code>Ctrl + P</code>. In the print dialog, choose "Save as PDF" or print to paper. Make sure to set margins to <strong>None</strong> or <strong>Default</strong>, and verify that it fits clean on a single A4 page.
+    </div>
+
+    <div class="control-panel">
+      <div class="form-group">
+        <label for="exam-title">Exam Title</label>
+        <input type="text" id="exam-title" value="BIOLOGY CH-3 PREDICTIVE EXAM">
+      </div>
+      
+      <div class="form-group">
+        <label for="total-qs">Total Questions</label>
+        <input type="number" id="total-qs" value="90" min="1" max="200">
+      </div>
+
+      <div class="form-group">
+        <label for="bubble-opts">Options per Q</label>
+        <select id="bubble-opts">
+          <option value="4" selected>4 Options (A, B, C, D)</option>
+          <option value="5">5 Options (A, B, C, D, E)</option>
+          <option value="3">3 Options (A, B, C)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="layout-cols">Grid Columns</label>
+        <select id="layout-cols">
+          <option value="2">2 Columns</option>
+          <option value="3" selected>3 Columns</option>
+          <option value="4">4 Columns</option>
+        </select>
+      </div>
+
+      <button id="generate-btn" class="action-btn">Update Sheet</button>
+      <button id="print-btn" class="action-btn secondary">Print Sheet</button>
+    </div>
+
+    <!-- Target insertion div for generated OMR -->
+    <div id="omr-container"></div>
+  </div>
+
+  <!-- Library Scripts -->
+  <script src="../src/omr-generator.js"></script>
+  
+  <script>
+    function updateOMR() {
+      const title = document.getElementById('exam-title').value;
+      const totalQuestions = parseInt(document.getElementById('total-qs').value, 10);
+      const optionsPerQuestion = parseInt(document.getElementById('bubble-opts').value, 10);
+      const columns = parseInt(document.getElementById('layout-cols').value, 10);
+
+      // Call the OpenEduKit generator function
+      window.OpenEduKit.generateOMR({
+        containerId: 'omr-container',
+        title: title,
+        totalQuestions: totalQuestions,
+        optionsPerQuestion: optionsPerQuestion,
+        columns: columns,
+        interactive: true // allows user to click/bubble selection in local preview
+      });
+    }
+
+    // Bind triggers
+    document.getElementById('generate-btn').addEventListener('click', updateOMR);
+    document.getElementById('print-btn').addEventListener('click', () => {
+      window.print();
+    });
+
+    // Initial render
+    updateOMR();
+  </script>
+</body>
+</html>

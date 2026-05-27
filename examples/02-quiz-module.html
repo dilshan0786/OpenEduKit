@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenEduKit.js - Interactive Quiz Engine Demo</title>
+  
+  <!-- Import Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Library Stylesheet -->
+  <link rel="stylesheet" href="../src/openedukit.css">
+  
+  <style>
+    body {
+      font-family: 'Outfit', sans-serif;
+      background-color: #f8fafc;
+      margin: 0;
+      padding: 40px 20px;
+    }
+    
+    .header-desc {
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto 30px auto;
+    }
+    
+    .header-desc h1 {
+      font-size: 28px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 8px;
+    }
+    
+    .header-desc p {
+      color: #64748b;
+      font-size: 15px;
+      margin: 0;
+    }
+    
+    .view-card {
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    .reset-btn-container {
+      text-align: center;
+      margin-top: 25px;
+    }
+  </style>
+</head>
+<body class="openedukit-quiz-mode">
+
+  <div class="header-desc">
+    <h1>Interactive Exam Engine</h1>
+    <p>Renders exams dynamically from JSON schema configs, stores option state, and runs local scorecard analysis on submit.</p>
+  </div>
+
+  <!-- Container for the Quiz Engine -->
+  <div id="quiz-mount-point" class="view-card"></div>
+
+  <!-- Container for the Scorecard / Report Analyzer -->
+  <div id="report-mount-point" class="view-card" style="display: none;"></div>
+
+  <div class="reset-btn-container" id="reset-section" style="display: none;">
+    <button class="quiz-btn quiz-btn-secondary" onclick="restartQuiz()">Retake Exam</button>
+  </div>
+
+  <!-- Library Scripts -->
+  <script src="../src/quiz-engine.js"></script>
+  <script src="../src/exam-analyzer.js"></script>
+
+  <script>
+    let globalQuizData = null;
+
+    // Zero-base Explanation: We use fetch() to retrieve our external sample JSON file,
+    // parse the JSON text into a live memory object, and feed it directly into the QuizEngine.
+    async function startQuizApp() {
+      try {
+        const response = await fetch('./data/sample-quiz.json');
+        if (!response.ok) {
+          throw new Error(`Failed to load JSON file. Status: ${response.status}`);
+        }
+        globalQuizData = await response.json();
+        
+        loadEngine();
+      } catch (err) {
+        console.error("OpenEduKit Demo Error:", err);
+        // Fallback mockup dataset in case server blocks local file fetch configurations
+        globalQuizData = {
+          "quizTitle": "Fallback Science Exam",
+          "questions": [
+            {
+              "id": 1,
+              "questionText": "What is the chemical symbol for Water?",
+              "options": ["CO2", "H2O", "O2", "NaCl"],
+              "correctAnswerIndex": 1
+            },
+            {
+              "id": 2,
+              "questionText": "Which planet is closest to the Sun?",
+              "options": ["Venus", "Mars", "Earth", "Mercury"],
+              "correctAnswerIndex": 3
+            }
+          ]
+        };
+        loadEngine();
+      }
+    }
+
+    function loadEngine() {
+      document.getElementById('quiz-mount-point').style.display = 'block';
+      document.getElementById('report-mount-point').style.display = 'none';
+      document.getElementById('reset-section').style.display = 'none';
+
+      const engine = new window.OpenEduKit.QuizEngine({
+        containerId: 'quiz-mount-point',
+        quizData: globalQuizData,
+        onComplete: (studentResponses) => {
+          // Trigger Exam Analyzer
+          const report = window.OpenEduKit.analyzeExam(globalQuizData.questions, studentResponses);
+          
+          // Hide Quiz & Render Scorecard Report
+          document.getElementById('quiz-mount-point').style.display = 'none';
+          document.getElementById('report-mount-point').style.display = 'block';
+          document.getElementById('reset-section').style.display = 'block';
+
+          // Call Analyzer DOM renderer
+          window.OpenEduKit.renderReportHTML('report-mount-point', report);
+        }
+      });
+
+      engine.init();
+    }
+
+    function restartQuiz() {
+      loadEngine();
+    }
+
+    // Launch app on load
+    startQuizApp();
+  </script>
+</body>
+</html>

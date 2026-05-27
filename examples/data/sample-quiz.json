@@ -1,0 +1,35 @@
+{
+  "quizTitle": "General Science & Biology Exam",
+  "questions": [
+    {
+      "id": 1,
+      "questionText": "Which organelle is famously referred to as the powerhouse of the cell?",
+      "options": ["Nucleus", "Ribosome", "Mitochondria", "Lysosome"],
+      "correctAnswerIndex": 2
+    },
+    {
+      "id": 2,
+      "questionText": "What is the primary site of photosynthesis in plants?",
+      "options": ["Mitochondria", "Chloroplast", "Endoplasmic Reticulum", "Golgi Apparatus"],
+      "correctAnswerIndex": 1
+    },
+    {
+      "id": 3,
+      "questionText": "How many bones are there in an adult human skeleton?",
+      "options": ["106", "206", "306", "406"],
+      "correctAnswerIndex": 1
+    },
+    {
+      "id": 4,
+      "questionText": "Which gas is most abundant in the Earth's atmosphere?",
+      "options": ["Oxygen", "Carbon Dioxide", "Nitrogen", "Hydrogen"],
+      "correctAnswerIndex": 2
+    },
+    {
+      "id": 5,
+      "questionText": "Which blood group is known as the universal donor?",
+      "options": ["A positive", "B negative", "AB positive", "O negative"],
+      "correctAnswerIndex": 3
+    }
+  ]
+}

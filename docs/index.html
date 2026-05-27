@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenEduKit.js - Lightweight Educational Exam Utilities</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  
+  <!-- Import library CSS -->
+  <link rel="stylesheet" href="../src/openedukit.css">
+  
+  <style>
+    :root {
+      --brand-primary: #3b82f6;
+      --brand-dark: #0f172a;
+      --brand-light: #f8fafc;
+      --card-bg: rgba(255, 255, 255, 0.8);
+      --glass-border: rgba(226, 232, 240, 0.8);
+    }
+    
+    body {
+      font-family: 'Outfit', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #eef2f6 0%, #dbeafe 100%);
+      color: var(--brand-dark);
+      min-height: 100vh;
+    }
+    
+    /* Top Navbar */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 40px;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--glass-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .nav-logo {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--brand-dark);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .nav-logo span {
+      color: var(--brand-primary);
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 25px;
+    }
+    
+    .nav-link {
+      text-decoration: none;
+      color: #475569;
+      font-weight: 600;
+      font-size: 15px;
+      transition: color 0.2s;
+    }
+    
+    .nav-link:hover {
+      color: var(--brand-primary);
+    }
+    
+    /* Main Layout */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+    
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      margin-bottom: 50px;
+      padding: 40px 0;
+    }
+    
+    .hero h1 {
+      font-size: 48px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      margin: 0 0 15px 0;
+      line-height: 1.1;
+    }
+    
+    .hero h1 span {
+      background: linear-gradient(to right, #2563eb, #3b82f6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .hero p {
+      font-size: 18px;
+      color: #475569;
+      max-width: 700px;
+      margin: 0 auto 30px auto;
+      line-height: 1.6;
+    }
+    
+    /* Tabs Layout */
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+    
+    .tab-btn {
+      padding: 12px 28px;
+      border: 1px solid var(--glass-border);
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 15px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      backdrop-filter: blur(8px);
+    }
+    
+    .tab-btn.active {
+      background-color: var(--brand-primary);
+      color: white;
+      border-color: var(--brand-primary);
+      box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
+    }
+    
+    /* Playground Panels */
+    .panel {
+      display: none;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05);
+    }
+    
+    .panel.active {
+      display: block;
+    }
+    
+    /* Custom controls for Playground */
+    .playground-grid {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 30px;
+    }
+    
+    @media (max-width: 768px) {
+      .playground-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .settings-col {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 24px;
+      border-radius: 16px;
+      border: 1px solid var(--glass-border);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    
+    .display-col {
+      background: #ffffff;
+      border-radius: 16px;
+      border: 1px solid var(--glass-border);
+      padding: 20px;
+      overflow-y: auto;
+      max-height: 700px;
+      box-shadow: inset 0 2px 4px 0 rgba(0,0,0,0.05);
+    }
+    
+    .code-block {
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 20px;
+      border-radius: 12px;
+      font-family: 'Fira Code', monospace;
+      font-size: 13px;
+      overflow-x: auto;
+      line-height: 1.5;
+      margin: 15px 0 0 0;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 40px 0;
+      color: #64748b;
+      font-size: 14px;
+      margin-top: 50px;
+      border-top: 1px solid var(--glass-border);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="nav-logo">
+      <span>●</span> OpenEduKit.js
+    </div>
+    <nav class="nav-links">
+      <a href="../examples/01-omr-generator.html" class="nav-link">OMR Demo</a>
+      <a href="../examples/02-quiz-module.html" class="nav-link">Quiz Demo</a>
+      <a href="https://github.com" class="nav-link" target="_blank">GitHub</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    
+    <!-- Hero -->
+    <section class="hero">
+      <h1>Automate Exam Workflows with <span>OpenEduKit.js</span></h1>
+      <p>A zero-dependency, low-ink, ultra-lightweight frontend toolkit for generating print-perfect OMR answer sheets, managing interactive test engines, and calculating immediate grader analytics.</p>
+      
+      <!-- Tabs to switch playground -->
+      <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('omr')">OMR Generator</button>
+        <button class="tab-btn" onclick="switchTab('quiz')">Quiz Engine & Analyzer</button>
+        <button class="tab-btn" onclick="switchTab('docs')">API Docs & Code</button>
+      </div>
+    </section>
+
+    <!-- Panel 1: OMR Generator Playground -->
+    <section id="panel-omr" class="panel active">
+      <div class="playground-grid">
+        <div class="settings-col">
+          <h3>OMR Configurator</h3>
+          
+          <div class="form-group">
+            <label for="p-title">Exam Title</label>
+            <input type="text" id="p-title" value="OpenEduKit Trial Exam">
+          </div>
+          
+          <div class="form-group">
+            <label for="p-qs">Number of Questions</label>
+            <input type="number" id="p-qs" value="60" min="5" max="150">
+          </div>
+          
+          <div class="form-group">
+            <label for="p-opts">Options per Question</label>
+            <input type="number" id="p-opts" value="4" min="2" max="6">
+          </div>
+
+          <div class="form-group">
+            <label for="p-cols">Grid Columns</label>
+            <select id="p-cols">
+              <option value="2">2 Columns</option>
+              <option value="3" selected>3 Columns</option>
+              <option value="4">4 Columns</option>
+            </select>
+          </div>
+
+          <button class="action-btn" onclick="buildPlaygroundOMR()">Apply Settings</button>
+          <button class="action-btn secondary" onclick="window.print()">Print Preview (A4)</button>
+        </div>
+
+        <div class="display-col" id="playground-omr-output">
+          <!-- OMR sheet gets rendered here -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Panel 2: Quiz Engine & Analyzer Playground -->
+    <section id="panel-quiz" class="panel">
+      <div class="playground-grid">
+        <div class="settings-col">
+          <h3>Active Test Engine</h3>
+          <p style="font-size: 13px; color: var(--text-secondary); margin: 0;">
+            This panel shows the interactive screen quiz. Answer all questions to see the integrated performance summary and scorecard calculations in real-time.
+          </p>
+          <button class="action-btn" onclick="resetPlaygroundQuiz()">Restart Quiz</button>
+        </div>
+
+        <div class="display-col">
+          <div id="playground-quiz-output"></div>
+          <div id="playground-analyzer-output" style="display: none;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Panel 3: API Docs & Code Documentation -->
+    <section id="panel-docs" class="panel">
+      <h2>Integration Documentation</h2>
+      <p>Integrate <strong>OpenEduKit.js</strong> directly into your HTML pages with simple script source tags:</p>
+
+      <h3>1. Dynamic OMR Sheet Generator API</h3>
+      <pre class="code-block">
+// Initialize OMR generation
+OpenEduKit.generateOMR({
+  containerId: 'omr-container',
+  title: 'FINAL TERM BIOLOGY EXAM',
+  totalQuestions: 90,
+  optionsPerQuestion: 4,
+  columns: 3,
+  interactive: true
+});
+      </pre>
+
+      <h3>2. JSON-Driven Quiz Module API</h3>
+      <pre class="code-block">
+// Setup interactive digital quiz
+const engine = new OpenEduKit.QuizEngine({
+  containerId: 'quiz-container',
+  quizData: {
+    quizTitle: "Science Exam",
+    questions: [
+      { id: 1, questionText: "Water formula?", options: ["H2O", "CO2"], correctAnswerIndex: 0 }
+    ]
+  },
+  onComplete: (responses) => {
+    console.log("Responses submitted:", responses);
+  }
+});
+engine.init();
+      </pre>
+
+      <h3>3. Scorecard & Response Analyzer API</h3>
+      <pre class="code-block">
+// Grade responses and display reports
+const report = OpenEduKit.analyzeExam(questionsList, studentResponses);
+console.log(report.percentage); // e.g. 85.5
+
+// Render report scorecard to dashboard
+OpenEduKit.renderReportHTML('report-container', report);
+      </pre>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <p>© 2026 OpenEduKit.js. Built for the global educational software ecosystem. Distributed under the MIT License.</p>
+  </footer>
+
+  <!-- Load library scripts -->
+  <script src="../src/omr-generator.js"></script>
+  <script src="../src/quiz-engine.js"></script>
+  <script src="../src/exam-analyzer.js"></script>
+  
+  <!-- Load Demo Controller -->
+  <script src="demo.js"></script>
+
+</body>
+</html>

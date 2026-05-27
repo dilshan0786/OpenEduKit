@@ -1,0 +1,383 @@
+/* 
+  OpenEduKit.css - Modern Design System for Digital Quizzes and Low-Ink Print OMR Sheets
+  Author: OpenEduKit Community
+  License: MIT
+*/
+
+:root {
+  /* Color Palette - Premium Slate & Blue (Screen Mode) */
+  --primary-color: #2563eb;
+  --primary-hover: #1d4ed8;
+  --bg-color: #f8fafc;
+  --surface-color: #ffffff;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --border-color: #e2e8f0;
+  --success: #16a34a;
+  --error: #dc2626;
+  --accent: #f59e0b;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+}
+
+/* Base Styles for Screen */
+body.openedukit-quiz-mode {
+  font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  margin: 0;
+  padding: 20px;
+  line-height: 1.5;
+}
+
+/* OMR Sheet Styles (Screen and General Preview) */
+.omr-sheet-container {
+  max-width: 800px;
+  margin: 0 auto;
+  background: #fff;
+  padding: 40px;
+  box-shadow: var(--shadow-lg);
+  border-radius: var(--radius-md);
+  box-sizing: border-box;
+}
+
+.omr-header {
+  border-bottom: 2px solid #000;
+  padding-bottom: 20px;
+  margin-bottom: 25px;
+}
+
+.omr-title {
+  text-align: center;
+  font-size: 24px;
+  font-weight: 800;
+  margin: 0 0 15px 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.omr-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.omr-meta-field {
+  display: flex;
+  align-items: flex-end;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.omr-meta-field label {
+  margin-right: 8px;
+  white-space: nowrap;
+}
+
+.omr-meta-field .line {
+  flex-grow: 1;
+  border-bottom: 1px dashed #000;
+  height: 18px;
+}
+
+/* OMR Grid Layout */
+.omr-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 30px;
+}
+
+.omr-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.omr-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+
+.omr-q-num {
+  width: 28px;
+  font-weight: bold;
+  text-align: right;
+  margin-right: 12px;
+}
+
+.omr-bubbles {
+  display: flex;
+  gap: 8px;
+}
+
+.omr-bubble {
+  width: 22px;
+  height: 22px;
+  border: 1px solid #000;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 700;
+  color: #000;
+  user-select: none;
+  cursor: pointer;
+  background-color: transparent;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+/* Fill effect when clicked/completed in interactive preview mode */
+.omr-bubble.filled {
+  background-color: #000 !important;
+  color: #fff !important;
+}
+
+/* Quiz Interface Layout */
+.quiz-container {
+  max-width: 680px;
+  margin: 40px auto;
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-lg);
+  padding: 30px;
+  transition: transform 0.3s ease;
+}
+
+.quiz-header {
+  margin-bottom: 25px;
+}
+
+.quiz-progress-bar-bg {
+  width: 100%;
+  height: 6px;
+  background-color: var(--border-color);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.quiz-progress-bar-fill {
+  height: 100%;
+  background-color: var(--primary-color);
+  width: 0%;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.quiz-question-box {
+  margin-bottom: 30px;
+}
+
+.quiz-question-text {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+}
+
+.quiz-options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.quiz-option-item {
+  display: flex;
+  align-items: center;
+  padding: 14px 18px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background-color: var(--surface-color);
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.quiz-option-item:hover {
+  border-color: var(--primary-color);
+  background-color: #eff6ff;
+}
+
+.quiz-option-item.selected {
+  border-color: var(--primary-color);
+  background-color: #dbeafe;
+  color: var(--primary-hover);
+}
+
+.quiz-option-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: var(--bg-color);
+  color: var(--text-secondary);
+  font-weight: 700;
+  font-size: 13px;
+  margin-right: 14px;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.quiz-option-item.selected .quiz-option-badge {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+.quiz-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--border-color);
+  padding-top: 20px;
+}
+
+.quiz-btn {
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quiz-btn-primary {
+  background-color: var(--primary-color);
+  color: #fff;
+}
+
+.quiz-btn-primary:hover {
+  background-color: var(--primary-hover);
+}
+
+.quiz-btn-secondary {
+  background-color: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.quiz-btn-secondary:hover {
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+}
+
+.quiz-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Report Summary Card Styles */
+.report-card {
+  max-width: 600px;
+  margin: 30px auto;
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 30px;
+  box-shadow: var(--shadow-md);
+}
+
+.report-title {
+  font-size: 22px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.report-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.report-stat-box {
+  background: var(--bg-color);
+  padding: 15px;
+  border-radius: var(--radius-md);
+}
+
+.report-stat-val {
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.report-stat-val.correct { color: var(--success); }
+.report-stat-val.incorrect { color: var(--error); }
+.report-stat-val.score { color: var(--primary-color); }
+
+.report-stat-lbl {
+  font-size: 11px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 5px;
+}
+
+/* --- PRINT RULES (Critical for Low-Ink OMR) --- */
+@media print {
+  /* Hide unnecessary web elements, header, footers */
+  body, .no-print, button, .quiz-container, .report-card {
+    display: none !important;
+  }
+  
+  /* Reset document for clean background */
+  html, body {
+    background-color: #fff !important;
+    color: #000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Force OMR container to fit exactly in portrait A4 page boundaries */
+  .omr-sheet-container {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 10mm 15mm !important; /* Proper printing padding */
+    box-shadow: none !important;
+    border: none !important;
+    page-break-after: avoid;
+    page-break-inside: avoid;
+    box-sizing: border-box;
+  }
+
+  /* Force grid structures to stay in place */
+  .omr-grid {
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important; /* Standard 3 column layout for physical paper sheets */
+    column-gap: 20px !important;
+    row-gap: 5px !important;
+  }
+
+  /* Prevent row orphans */
+  .omr-row {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Styling adjustments for exact low-ink representation */
+  .omr-bubble {
+    border: 1px solid #000 !important;
+    background-color: transparent !important;
+    color: #000 !important;
+  }
+
+  .omr-meta-field .line {
+    border-bottom: 1px solid #000 !important;
+  }
+}
