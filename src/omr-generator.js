@@ -1,8 +1,8 @@
 /**
- * OpenEduKit.js - Dynamic High-Fidelity OMR Sheet Generator
+ * OpenEduKit.js - Highly Customizable High-Fidelity OMR Sheet Generator
  * 
- * Generates an authentic crimson-red style printed OMR sheet matching the layout 
- * of professional state examination boards (such as WB JECA).
+ * Generates customizable printed OMR sheets with support for custom headers,
+ * uploaded logos, variable meta-fields, adjustable coding grids, and customizable series bubbles.
  */
 
 (function (global) {
@@ -11,24 +11,48 @@
   /**
    * Generates the High-Fidelity OMR Sheet HTML and injects it into a container.
    * @param {Object} options Configuration parameters
-   * @param {string} options.containerId The DOM ID of the target container
-   * @param {string} [options.boardTitle] Board title (e.g., "WEST BENGAL JOINT ENTRANCE EXAMINATIONS BOARD")
-   * @param {string} [options.examTitle] Exam name (e.g., "OMR ANSWER SHEET — JECA ENTRANCE EXAMINATION")
+   * @param {string} options.containerId Target DOM injection ID
+   * @param {string} [options.boardTitle] Board title. Defaults to "WEST BENGAL JOINT ENTRANCE EXAMINATIONS BOARD"
+   * @param {string} [options.examTitle] Exam title. Defaults to "SAMPLE OMR SHEET"
+   * @param {string} [options.logoUrl] Custom image URL or Base64 Data URL for the header logo
+   * @param {string[]} [options.metaFields] Array of printable candidate meta fields (e.g. Name, Roll Number, Subject)
+   * 
+   * @param {boolean} [options.showRollNumber] Toggle roll number bubble grid. Defaults to true.
+   * @param {number} [options.rollNumberDigits] Digits in roll number coding grid. Defaults to 10.
+   * @param {boolean} [options.showBookletNumber] Toggle booklet number bubble grid. Defaults to true.
+   * @param {number} [options.bookletNumberDigits] Digits in booklet number coding grid. Defaults to 10.
+   * @param {boolean} [options.showBarcode] Toggle barcode generation. Defaults to true.
+   * 
+   * @param {boolean} [options.showSeries] Toggle exam series bubbles. Defaults to true.
+   * @param {string[]} [options.seriesList] Array of letters for series selector (e.g., ['A', 'B', 'C', 'D'])
+   * @param {string} [options.seriesLetter] Highlights a selected series letter in the title header
+   * 
    * @param {number} [options.totalQuestions] Total number of questions. Defaults to 100.
-   * @param {number} [options.optionsPerQuestion] Options count. Defaults to 4.
-   * @param {number} [options.columns] Number of grid columns for questions. Defaults to 5 (20 per column for 100 Qs).
-   * @param {string} [options.seriesLetter] Exam series letter. Defaults to 'A'.
-   * @param {boolean} [options.interactive] Enable bubble toggling on screen. Defaults to false.
+   * @param {number} [options.optionsPerQuestion] Options per question bubble row. Defaults to 4.
+   * @param {number} [options.columns] Number of grid columns for questions. Defaults to 5.
+   * @param {boolean} [options.interactive] Enable bubble selection clicking. Defaults to false.
    */
   function generateOMR(options) {
     const config = Object.assign({
       boardTitle: "WEST BENGAL JOINT ENTRANCE EXAMINATIONS BOARD",
-      examTitle: "OMR ANSWER SHEET — JECA ENTRANCE EXAMINATION",
+      examTitle: "SAMPLE OMR SHEET",
+      logoUrl: "",
+      metaFields: ["Student Name", "Name of the Examination Centre"],
+      showRollNumber: true,
+      rollNumberDigits: 10,
+      showBookletNumber: true,
+      bookletNumberDigits: 10,
+      showBarcode: true,
+      showSeries: true,
+      seriesList: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
+      seriesLetter: "A",
       totalQuestions: 100,
       optionsPerQuestion: 4,
       columns: 5,
-      seriesLetter: "A",
-      interactive: false
+      interactive: false,
+      footerTextLeft: "Signature of the Candidate: _____________________________________",
+      footerTextCenter: "Signature of the Invigilator: _____________________________________",
+      footerTextRight: "openedukit.org"
     }, options);
 
     const container = document.getElementById(config.containerId);
@@ -47,19 +71,29 @@
     const header = document.createElement('div');
     header.className = 'omr-header';
 
-    // Left Circular Logo Placeholder
-    const logoPlaceholder = document.createElement('div');
-    logoPlaceholder.style.width = '55px';
-    logoPlaceholder.style.height = '55px';
-    logoPlaceholder.style.border = '2px solid var(--omr-theme-color)';
-    logoPlaceholder.style.borderRadius = '50%';
-    logoPlaceholder.style.display = 'flex';
-    logoPlaceholder.style.alignItems = 'center';
-    logoPlaceholder.style.justifyContent = 'center';
-    logoPlaceholder.style.fontWeight = 'bold';
-    logoPlaceholder.style.fontSize = '8pt';
-    logoPlaceholder.textContent = "LOGO";
-    header.appendChild(logoPlaceholder);
+    // Logo image rendering or default box
+    if (config.logoUrl) {
+      const logoImg = document.createElement('img');
+      logoImg.src = config.logoUrl;
+      logoImg.alt = "OMR Header Logo";
+      logoImg.style.width = '55px';
+      logoImg.style.height = '55px';
+      logoImg.style.objectFit = 'contain';
+      header.appendChild(logoImg);
+    } else {
+      const logoPlaceholder = document.createElement('div');
+      logoPlaceholder.style.width = '55px';
+      logoPlaceholder.style.height = '55px';
+      logoPlaceholder.style.border = '2px solid var(--omr-theme-color)';
+      logoPlaceholder.style.borderRadius = '50%';
+      logoPlaceholder.style.display = 'flex';
+      logoPlaceholder.style.alignItems = 'center';
+      logoPlaceholder.style.justifyContent = 'center';
+      logoPlaceholder.style.fontWeight = 'bold';
+      logoPlaceholder.style.fontSize = '8pt';
+      logoPlaceholder.textContent = "LOGO";
+      header.appendChild(logoPlaceholder);
+    }
 
     // Center Title Text
     const headerText = document.createElement('div');
@@ -72,11 +106,18 @@
     headerText.appendChild(examTitleEl);
     header.appendChild(headerText);
 
-    // Right Series Block
-    const seriesBox = document.createElement('div');
-    seriesBox.className = 'omr-series-box';
-    seriesBox.innerHTML = `Series <span class="omr-series-value">${config.seriesLetter}</span>`;
-    header.appendChild(seriesBox);
+    // Right Series Block (if enabled)
+    if (config.showSeries && config.seriesLetter) {
+      const seriesBox = document.createElement('div');
+      seriesBox.className = 'omr-series-box';
+      seriesBox.innerHTML = `Series <span class="omr-series-value">${config.seriesLetter}</span>`;
+      header.appendChild(seriesBox);
+    } else {
+      // Empty buffer block to keep flex alignment stable
+      const buffer = document.createElement('div');
+      buffer.style.width = '55px';
+      header.appendChild(buffer);
+    }
 
     omrWrapper.appendChild(header);
 
@@ -88,28 +129,23 @@
     const leftColumn = document.createElement('div');
     leftColumn.className = 'omr-left-column';
 
-    // Name input box
-    const nameBox = document.createElement('div');
-    nameBox.className = 'omr-input-group';
-    nameBox.innerHTML = `
-      <span class="omr-label">Candidate's Name (In Block Letters)</span>
-      <div class="omr-input-line"></div>
-    `;
-    leftColumn.appendChild(nameBox);
-
-    // Center input box
-    const centerBox = document.createElement('div');
-    centerBox.className = 'omr-input-group';
-    centerBox.innerHTML = `
-      <span class="omr-label">Name of the Examination Centre (In Block Letters)</span>
-      <div class="omr-input-line"></div>
-    `;
-    leftColumn.appendChild(centerBox);
+    // Dynamic Metadata fields
+    if (config.metaFields && config.metaFields.length > 0) {
+      config.metaFields.forEach(fieldName => {
+        const metaBox = document.createElement('div');
+        metaBox.className = 'omr-input-group';
+        metaBox.innerHTML = `
+          <span class="omr-label">${fieldName}</span>
+          <div class="omr-input-line"></div>
+        `;
+        leftColumn.appendChild(metaBox);
+      });
+    }
 
     // Instructions Box (Correct/Wrong Methods) and Barcode Block
     const bottomRow = document.createElement('div');
     bottomRow.style.display = 'grid';
-    bottomRow.style.gridTemplateColumns = '1.2fr 1fr';
+    bottomRow.style.gridTemplateColumns = config.showBarcode ? '1.2fr 1fr' : '1fr';
     bottomRow.style.gap = '10px';
     bottomRow.style.alignItems = 'center';
 
@@ -138,18 +174,23 @@
     bottomRow.appendChild(methodsBox);
 
     // Barcode rendering container
-    const barcodeBox = document.createElement('div');
-    barcodeBox.className = 'omr-barcode-box';
-    bottomRow.appendChild(barcodeBox);
+    if (config.showBarcode) {
+      const barcodeBox = document.createElement('div');
+      barcodeBox.className = 'omr-barcode-box';
+      bottomRow.appendChild(barcodeBox);
+      leftColumn.appendChild(bottomRow);
+      renderDynamicBarcode(barcodeBox);
+    } else {
+      leftColumn.appendChild(bottomRow);
+    }
 
-    leftColumn.appendChild(bottomRow);
     mainTop.appendChild(leftColumn);
 
     // Right Column: Roll Number, Booklet Number, Series selection
     const rightColumn = document.createElement('div');
     rightColumn.className = 'omr-right-column';
 
-    // Helper function to build 10-column digit bubble grids
+    // Helper function to build digit bubble grids
     function createCodingGrid(titleText, colsCount) {
       const grid = document.createElement('div');
       grid.className = 'omr-coding-grid';
@@ -192,56 +233,74 @@
       return grid;
     }
 
-    rightColumn.appendChild(createCodingGrid("Roll Number", 10));
-    rightColumn.appendChild(createCodingGrid("Booklet No.", 10));
+    if (config.showRollNumber) {
+      rightColumn.appendChild(createCodingGrid("Roll Number", config.rollNumberDigits));
+    }
+    if (config.showBookletNumber) {
+      rightColumn.appendChild(createCodingGrid("Booklet No.", config.bookletNumberDigits));
+    }
 
-    // Vertical Series selector grid (A, B, C, D)
-    const verticalSeries = document.createElement('div');
-    verticalSeries.className = 'omr-coding-grid';
-    verticalSeries.style.display = 'flex';
-    verticalSeries.style.flexDirection = 'column';
-    verticalSeries.style.justifyContent = 'space-between';
-    verticalSeries.style.minWidth = '42px';
-    verticalSeries.innerHTML = `<span style="font-size: 7pt;">Series</span>`;
+    // Vertical Series selector grid (if enabled)
+    if (config.showSeries && config.seriesList && config.seriesList.length > 0) {
+      const verticalSeries = document.createElement('div');
+      verticalSeries.className = 'omr-coding-grid';
+      verticalSeries.style.display = 'flex';
+      verticalSeries.style.flexDirection = 'column';
+      verticalSeries.style.justifyContent = 'space-between';
+      verticalSeries.style.minWidth = '42px';
+      verticalSeries.innerHTML = `<span style="font-size: 7pt;">Series</span>`;
 
-    const seriesBubbleWrapper = document.createElement('div');
-    seriesBubbleWrapper.style.display = 'flex';
-    seriesBubbleWrapper.style.flexDirection = 'column';
-    seriesBubbleWrapper.style.gap = '15px';
-    seriesBubbleWrapper.style.alignItems = 'center';
-    seriesBubbleWrapper.style.justifyContent = 'center';
-    seriesBubbleWrapper.style.flex = '1';
+      const seriesBubbleWrapper = document.createElement('div');
+      seriesBubbleWrapper.style.display = 'flex';
+      seriesBubbleWrapper.style.flexDirection = 'column';
+      seriesBubbleWrapper.style.gap = '8px';
+      seriesBubbleWrapper.style.alignItems = 'center';
+      seriesBubbleWrapper.style.justifyContent = 'center';
+      seriesBubbleWrapper.style.flex = '1';
 
-    ["A", "B", "C", "D"].forEach(letter => {
-      const bubble = document.createElement('div');
-      bubble.className = 'omr-coding-bubble';
-      bubble.style.width = '14px';
-      bubble.style.height = '14px';
-      bubble.style.fontSize = '7pt';
-      bubble.textContent = letter;
-      
-      if (config.interactive) {
-        bubble.addEventListener('click', () => {
-          const sisterBubbles = seriesBubbleWrapper.querySelectorAll('.omr-coding-bubble');
-          const wasFilled = bubble.classList.contains('filled');
-          sisterBubbles.forEach(sb => sb.classList.remove('filled'));
-          if (!wasFilled) {
-            bubble.classList.add('filled');
-          }
-        });
-      }
-      seriesBubbleWrapper.appendChild(bubble);
-    });
+      config.seriesList.forEach(letter => {
+        const bubble = document.createElement('div');
+        bubble.className = 'omr-coding-bubble';
+        bubble.style.width = '13px';
+        bubble.style.height = '13px';
+        bubble.style.fontSize = '6.5pt';
+        bubble.textContent = letter;
+        
+        // Auto-fill letter matching header selection
+        if (config.seriesLetter === letter) {
+          bubble.classList.add('filled');
+        }
+        
+        if (config.interactive) {
+          bubble.addEventListener('click', () => {
+            const sisterBubbles = seriesBubbleWrapper.querySelectorAll('.omr-coding-bubble');
+            const wasFilled = bubble.classList.contains('filled');
+            sisterBubbles.forEach(sb => sb.classList.remove('filled'));
+            if (!wasFilled) {
+              bubble.classList.add('filled');
+            }
+          });
+        }
+        seriesBubbleWrapper.appendChild(bubble);
+      });
 
-    verticalSeries.appendChild(seriesBubbleWrapper);
-    rightColumn.appendChild(verticalSeries);
+      verticalSeries.appendChild(seriesBubbleWrapper);
+      rightColumn.appendChild(verticalSeries);
+    }
 
-    mainTop.appendChild(rightColumn);
+    // Hide or scale layout columns based on visible right blocks
+    if (config.showRollNumber || config.showBookletNumber || config.showSeries) {
+      mainTop.appendChild(rightColumn);
+    } else {
+      mainTop.style.gridTemplateColumns = '1fr'; // expansion
+    }
+    
     omrWrapper.appendChild(mainTop);
 
     // 3. Question Bubbles Grid
     const bubblesGrid = document.createElement('div');
     bubblesGrid.className = 'omr-bubble-grid-container';
+    bubblesGrid.style.gridTemplateColumns = `repeat(${config.columns}, 1fr)`;
 
     const bubblesPerColumn = Math.ceil(config.totalQuestions / config.columns);
     const labels = Array.from({ length: config.optionsPerQuestion }, (_, i) => String.fromCharCode(65 + i));
@@ -302,16 +361,13 @@
     const footer = document.createElement('div');
     footer.className = 'omr-footer';
     footer.innerHTML = `
-      <div>Signature of the Candidate: _____________________________________</div>
-      <div>Signature of the Invigilator: _____________________________________</div>
-      <div style="font-size: 8pt;">openedukit.org</div>
+      <div>${config.footerTextLeft}</div>
+      <div>${config.footerTextCenter}</div>
+      <div style="font-size: 8pt;">${config.footerTextRight}</div>
     `;
     omrWrapper.appendChild(footer);
 
     container.appendChild(omrWrapper);
-
-    // Render Barcode dynamically inside the barcode box
-    renderDynamicBarcode(barcodeBox);
   }
 
   /**
