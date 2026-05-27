@@ -495,19 +495,32 @@ body.openedukit-quiz-mode {
 
 /* --- PRINT RULES (Critical for Low-Ink OMR) --- */
 @media print {
-  /* Hide unnecessary web elements, header, footers */
-  body, .no-print, button, .quiz-container, .report-card {
+  /* Hide unnecessary web elements, headers, controls */
+  .no-print, button, .quiz-container, .report-card, .control-panel, .dashboard-header, .navbar, .hero, .settings-col, .footer, .reset-btn-container, #reset-section, input[type="file"] {
     display: none !important;
   }
   
   /* Reset document for clean background */
   html, body {
+    display: block !important;
     background-color: #fff !important;
     color: #000 !important;
     margin: 0 !important;
     padding: 0 !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+  }
+
+  /* Reset layout wrappers to let OMR take full page width */
+  .workspace-grid, .shell-container, .display-col, #omr-container {
+    display: block !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
   }
 
   /* Force OMR container to fit exactly in portrait A4 page boundaries */
