@@ -1,5 +1,5 @@
 /* 
-  OpenEduKit.css - Modern Design System for Digital Quizzes and Low-Ink Print OMR Sheets
+  OpenEduKit.css - Modern Design System for Digital Quizzes and High-Fidelity OMR Sheets
   Author: OpenEduKit Community
   License: MIT
 */
@@ -22,6 +22,9 @@
   --radius-sm: 6px;
   --radius-md: 12px;
   --radius-lg: 16px;
+
+  /* OMR Core Brand Color (Authentic Exam Red) */
+  --omr-theme-color: #d32f2f;
 }
 
 /* Base Styles for Screen */
@@ -34,109 +37,273 @@ body.openedukit-quiz-mode {
   line-height: 1.5;
 }
 
-/* OMR Sheet Styles (Screen and General Preview) */
+/* --- HIGH-FIDELITY EXAM OMR CONTAINER --- */
 .omr-sheet-container {
-  max-width: 800px;
+  max-width: 820px;
   margin: 0 auto;
   background: #fff;
-  padding: 40px;
+  padding: 30px 40px;
   box-shadow: var(--shadow-lg);
   border-radius: var(--radius-md);
   box-sizing: border-box;
+  font-family: 'Times New Roman', Times, serif;
+  color: var(--omr-theme-color);
 }
 
 .omr-header {
-  border-bottom: 2px solid #000;
-  padding-bottom: 20px;
-  margin-bottom: 25px;
-}
-
-.omr-title {
-  text-align: center;
-  font-size: 24px;
-  font-weight: 800;
-  margin: 0 0 15px 0;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.omr-meta-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 15px;
-  margin-bottom: 15px;
-}
-
-.omr-meta-field {
   display: flex;
-  align-items: flex-end;
-  font-size: 13px;
-  font-weight: 600;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2.5px solid var(--omr-theme-color);
+  padding-bottom: 12px;
+  margin-bottom: 20px;
 }
 
-.omr-meta-field label {
-  margin-right: 8px;
-  white-space: nowrap;
+.omr-header-text {
+  text-align: center;
+  flex: 1;
 }
 
-.omr-meta-field .line {
-  flex-grow: 1;
-  border-bottom: 1px dashed #000;
+.omr-header-text h2 {
+  font-size: 16pt;
+  font-weight: bold;
+  margin: 0;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.omr-header-text h4 {
+  font-size: 10pt;
+  margin: 6px 0 0 0;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.omr-series-box {
+  text-align: right;
+  font-weight: bold;
+  font-size: 12pt;
+}
+
+.omr-series-value {
+  font-size: 16pt;
+  border: 2px solid var(--omr-theme-color);
+  padding: 2px;
+  display: inline-block;
+  margin-left: 6px;
+  min-width: 28px;
+  height: 28px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* OMR Content Layout */
+.omr-main-top {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.omr-left-column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.omr-input-group {
+  border: 1px solid var(--omr-theme-color);
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+.omr-label {
+  font-size: 7.5pt;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.omr-input-line {
+  border-bottom: 1.5px dashed var(--omr-theme-color);
   height: 18px;
 }
 
-/* OMR Grid Layout */
-.omr-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 30px;
-}
-
-.omr-column {
+/* Method Instructions Layout */
+.omr-methods-box {
+  border: 1px solid var(--omr-theme-color);
+  padding: 8px 12px;
+  border-radius: 6px;
   display: flex;
   flex-direction: column;
+  gap: 6px;
+  font-size: 7pt;
 }
 
-.omr-row {
+.omr-method-row {
   display: flex;
   align-items: center;
-  margin-bottom: 8px;
-  font-size: 12px;
+  justify-content: space-between;
 }
 
-.omr-q-num {
-  width: 28px;
+.omr-method-row.wrong {
+  border-top: 1px dashed rgba(211, 47, 47, 0.3);
+  padding-top: 4px;
+}
+
+.omr-method-visuals {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.omr-method-dot {
+  width: 10px;
+  height: 10px;
+  border: 1px solid var(--omr-theme-color);
+  border-radius: 50%;
+}
+
+.omr-method-dot.filled {
+  background-color: #000;
+}
+
+/* Barcode Render style */
+.omr-barcode-box {
+  border: 1px solid var(--omr-theme-color);
+  padding: 6px;
+  border-radius: 6px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+}
+
+/* Right Coding Grids */
+.omr-right-column {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.omr-coding-grid {
+  border: 1px solid var(--omr-theme-color);
+  padding: 6px;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.omr-coding-grid span {
+  font-size: 7.5pt;
   font-weight: bold;
+  display: block;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.omr-coding-columns {
+  display: flex;
+  gap: 3px;
+}
+
+.omr-coding-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5px;
+  align-items: center;
+}
+
+.omr-coding-cell {
+  width: 14px;
+  height: 15px;
+  border: 1px solid var(--omr-theme-color);
+}
+
+.omr-coding-bubble {
+  width: 11px;
+  height: 11px;
+  border: 1px solid var(--omr-theme-color);
+  border-radius: 50%;
+  font-size: 5pt;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--omr-theme-color);
+  cursor: pointer;
+  user-select: none;
+}
+
+.omr-coding-bubble.filled {
+  background-color: #000 !important;
+  color: #fff !important;
+}
+
+/* Question OMR Bubbles Grid */
+.omr-bubble-grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.omr-bubble-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.omr-bubble-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10pt;
+}
+
+.omr-qnum {
+  width: 25px;
   text-align: right;
-  margin-right: 12px;
+  font-weight: bold;
 }
 
 .omr-bubbles {
   display: flex;
-  gap: 8px;
+  gap: 6px;
 }
 
 .omr-bubble {
-  width: 0.2cm;
-  height: 0.2cm;
-  border: 1px solid #000;
+  width: 0.3cm;
+  height: 0.3cm;
+  border: 1px solid var(--omr-theme-color);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 5px;
-  font-weight: 700;
-  color: #000;
+  font-size: 5.5pt;
+  font-weight: bold;
+  color: var(--omr-theme-color);
   user-select: none;
   cursor: pointer;
   background-color: transparent;
   transition: background-color 0.15s ease, color 0.15s ease;
+  font-family: Arial, sans-serif;
 }
 
-/* Fill effect when clicked/completed in interactive preview mode */
 .omr-bubble.filled {
   background-color: #000 !important;
   color: #fff !important;
+}
+
+/* Footer elements */
+.omr-footer {
+  border-top: 1.5px solid var(--omr-theme-color);
+  padding-top: 15px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 9pt;
+  font-weight: bold;
 }
 
 /* Quiz Interface Layout */
@@ -348,7 +515,7 @@ body.openedukit-quiz-mode {
     width: 100% !important;
     max-width: none !important;
     margin: 0 !important;
-    padding: 10mm 15mm !important; /* Proper printing padding */
+    padding: 8mm 10mm !important; /* Proper printing padding */
     box-shadow: none !important;
     border: none !important;
     page-break-after: avoid;
@@ -357,27 +524,27 @@ body.openedukit-quiz-mode {
   }
 
   /* Force grid structures to stay in place */
-  .omr-grid {
+  .omr-bubble-grid-container {
     display: grid !important;
-    grid-template-columns: repeat(3, 1fr) !important; /* Standard 3 column layout for physical paper sheets */
-    column-gap: 20px !important;
+    grid-template-columns: repeat(5, 1fr) !important; /* Standard 5 column layout for physical paper sheets */
+    column-gap: 12px !important;
     row-gap: 5px !important;
   }
 
   /* Prevent row orphans */
-  .omr-row {
+  .omr-bubble-row {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
   }
 
   /* Styling adjustments for exact low-ink representation */
   .omr-bubble {
-    border: 1px solid #000 !important;
+    border: 1px solid var(--omr-theme-color) !important;
     background-color: transparent !important;
-    color: #000 !important;
+    color: var(--omr-theme-color) !important;
   }
 
-  .omr-meta-field .line {
-    border-bottom: 1px solid #000 !important;
+  .omr-input-line {
+    border-bottom: 1.5px solid var(--omr-theme-color) !important;
   }
 }
