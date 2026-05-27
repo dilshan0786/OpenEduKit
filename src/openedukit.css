@@ -117,14 +117,14 @@ body.openedukit-quiz-mode {
 }
 
 .omr-bubble {
-  width: 22px;
-  height: 22px;
+  width: 0.2cm;
+  height: 0.2cm;
   border: 1px solid #000;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 9px;
+  font-size: 5px;
   font-weight: 700;
   color: #000;
   user-select: none;
