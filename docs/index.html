@@ -77,7 +77,7 @@
     
     /* Main Layout */
     .container {
-      max-width: 1200px;
+      max-width: 1300px;
       margin: 0 auto;
       padding: 40px 20px;
     }
@@ -85,8 +85,8 @@
     /* Hero Section */
     .hero {
       text-align: center;
-      margin-bottom: 50px;
-      padding: 40px 0;
+      margin-bottom: 30px;
+      padding: 20px 0;
     }
     
     .hero h1 {
@@ -157,11 +157,11 @@
     /* Custom controls for Playground */
     .playground-grid {
       display: grid;
-      grid-template-columns: 1fr 2fr;
+      grid-template-columns: 360px 1fr;
       gap: 30px;
     }
     
-    @media (max-width: 768px) {
+    @media (max-width: 900px) {
       .playground-grid {
         grid-template-columns: 1fr;
       }
@@ -169,12 +169,25 @@
     
     .settings-col {
       background: rgba(255, 255, 255, 0.9);
-      padding: 24px;
+      padding: 20px;
       border-radius: 16px;
       border: 1px solid var(--glass-border);
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 15px;
+      max-height: 800px;
+      overflow-y: auto;
+    }
+
+    .section-lbl {
+      font-size: 13px;
+      font-weight: 700;
+      color: #1e293b;
+      margin-top: 8px;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
     
     .display-col {
@@ -183,8 +196,38 @@
       border: 1px solid var(--glass-border);
       padding: 20px;
       overflow-y: auto;
-      max-height: 700px;
+      max-height: 800px;
       box-shadow: inset 0 2px 4px 0 rgba(0,0,0,0.05);
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    
+    .form-group label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #475569;
+    }
+    
+    .form-group input, .form-group select {
+      padding: 8px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 13px;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #475569;
+      cursor: pointer;
     }
     
     .code-block {
@@ -207,6 +250,26 @@
       margin-top: 50px;
       border-top: 1px solid var(--glass-border);
     }
+
+    /* Print overrides to hide customizer panel */
+    @media print {
+      .navbar, .hero, .settings-col, .footer {
+        display: none !important;
+      }
+      .playground-grid {
+        grid-template-columns: 1fr !important;
+      }
+      .display-col {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        max-height: none !important;
+        overflow: visible !important;
+      }
+      body {
+        background-color: #fff !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -217,9 +280,9 @@
       <span>●</span> OpenEduKit.js
     </div>
     <nav class="nav-links">
-      <a href="../examples/01-omr-generator.html" class="nav-link">OMR Demo</a>
+      <a href="../examples/01-omr-generator.html" class="nav-link">OMR Customizer</a>
       <a href="../examples/02-quiz-module.html" class="nav-link">Quiz Demo</a>
-      <a href="https://github.com" class="nav-link" target="_blank">GitHub</a>
+      <a href="https://github.com/dilshan0786/OpenEduKit" class="nav-link" target="_blank">GitHub</a>
     </nav>
   </header>
 
@@ -243,33 +306,82 @@
       <div class="playground-grid">
         <div class="settings-col">
           <h3>OMR Configurator</h3>
-          
+          <button class="action-btn secondary" onclick="window.print()">Print Preview (A4)</button>
+
+          <div class="section-lbl">Headers</div>
           <div class="form-group">
-            <label for="p-title">Exam Title</label>
-            <input type="text" id="p-title" value="OpenEduKit Trial Exam">
+            <label for="p-board">Board Title</label>
+            <input type="text" id="p-board" value="WEST BENGAL JOINT ENTRANCE EXAMINATIONS BOARD">
           </div>
           
           <div class="form-group">
-            <label for="p-qs">Number of Questions</label>
-            <input type="number" id="p-qs" value="60" min="5" max="150">
-          </div>
-          
-          <div class="form-group">
-            <label for="p-opts">Options per Question</label>
-            <input type="number" id="p-opts" value="4" min="2" max="6">
+            <label for="p-title">Exam Name</label>
+            <input type="text" id="p-title" value="SAMPLE OMR SHEET">
           </div>
 
           <div class="form-group">
-            <label for="p-cols">Grid Columns</label>
-            <select id="p-cols">
-              <option value="2">2 Columns</option>
-              <option value="3" selected>3 Columns</option>
-              <option value="4">4 Columns</option>
-            </select>
+            <label>Logo (Upload)</label>
+            <input type="file" id="p-logo-file" accept="image/*" style="font-size: 11px;">
+          </div>
+
+          <div class="section-lbl">Meta Fields</div>
+          <div class="form-group">
+            <label for="p-meta">Fields (Comma separated)</label>
+            <input type="text" id="p-meta" value="Candidate's Name (In Block Letters), Name of the Examination Centre (In Block Letters)">
+          </div>
+
+          <div class="section-lbl">Grids & Visibility</div>
+          
+          <label class="checkbox-row">
+            <input type="checkbox" id="p-show-roll" checked> Show Roll Number
+          </label>
+          <div class="form-group" id="p-roll-opt">
+            <label for="p-roll-digits">Roll Digits</label>
+            <input type="number" id="p-roll-digits" value="10" min="1" max="15">
+          </div>
+
+          <label class="checkbox-row">
+            <input type="checkbox" id="p-show-booklet" checked> Show Booklet Number
+          </label>
+          <div class="form-group" id="p-booklet-opt">
+            <label for="p-booklet-digits">Booklet Digits</label>
+            <input type="number" id="p-booklet-digits" value="10" min="1" max="15">
+          </div>
+
+          <label class="checkbox-row">
+            <input type="checkbox" id="p-show-barcode" checked> Show Barcode
+          </label>
+
+          <div class="section-lbl">Series Selector</div>
+          <label class="checkbox-row">
+            <input type="checkbox" id="p-show-series" checked> Show Series Box
+          </label>
+          <div id="p-series-opt">
+            <div class="form-group">
+              <label for="p-series-list">Series Letters</label>
+              <input type="text" id="p-series-list" value="A, B, C, D, E, F, G, H, I, J">
+            </div>
+            <div class="form-group" style="margin-top: 5px;">
+              <label for="p-series-val">Highlighted Series</label>
+              <input type="text" id="p-series-val" value="A" maxlength="1">
+            </div>
+          </div>
+
+          <div class="section-lbl">Layout Sizes</div>
+          <div class="form-group">
+            <label for="p-qs">Number of Questions</label>
+            <input type="number" id="p-qs" value="100" min="5" max="150">
+          </div>
+          <div class="form-group">
+            <label for="p-opts">Options per Q</label>
+            <input type="number" id="p-opts" value="4" min="2" max="6">
+          </div>
+          <div class="form-group">
+            <label for="p-cols">Columns</label>
+            <input type="number" id="p-cols" value="5" min="1" max="6">
           </div>
 
           <button class="action-btn" onclick="buildPlaygroundOMR()">Apply Settings</button>
-          <button class="action-btn secondary" onclick="window.print()">Print Preview (A4)</button>
         </div>
 
         <div class="display-col" id="playground-omr-output">
@@ -303,13 +415,22 @@
 
       <h3>1. Dynamic OMR Sheet Generator API</h3>
       <pre class="code-block">
-// Initialize OMR generation
+// Initialize OMR generation with customizable meta blocks and series lists
 OpenEduKit.generateOMR({
   containerId: 'omr-container',
-  title: 'FINAL TERM BIOLOGY EXAM',
-  totalQuestions: 90,
+  boardTitle: 'WEST BENGAL JOINT ENTRANCE EXAMINATIONS BOARD',
+  examTitle: 'SAMPLE OMR SHEET',
+  metaFields: ['Student Name', 'Roll Number', 'Subject'],
+  logoUrl: 'path/to/logo.png',
+  showRollNumber: true,
+  rollNumberDigits: 10,
+  showBarcode: true,
+  showSeries: true,
+  seriesList: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'],
+  seriesLetter: 'A',
+  totalQuestions: 100,
   optionsPerQuestion: 4,
-  columns: 3,
+  columns: 5,
   interactive: true
 });
       </pre>

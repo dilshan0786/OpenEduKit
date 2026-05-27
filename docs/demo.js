@@ -2,20 +2,18 @@
  * Docs Demo Controller - OpenEduKit.js Playground
  */
 
+let playgroundLogoBase64 = "";
+
 // Tab Management
 function switchTab(tabName) {
-  // Hide all panels
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   
-  // Show target panel
   const targetPanel = document.getElementById(`panel-${tabName}`);
   if (targetPanel) {
     targetPanel.classList.add('active');
   }
   
-  // Mark button as active
-  // Zero-base Explanation: We scan buttons to match text/onclick attributes, setting the selected tab's class.
   const buttons = document.querySelectorAll('.tab-btn');
   buttons.forEach(btn => {
     if (btn.getAttribute('onclick').includes(tabName)) {
@@ -23,22 +21,50 @@ function switchTab(tabName) {
     }
   });
 
-  // If entering quiz tab, auto-load/reset quiz
   if (tabName === 'quiz') {
     resetPlaygroundQuiz();
   }
 }
 
-// 1. OMR Playground Generator
+// OMR Playground Generator
 function buildPlaygroundOMR() {
-  const title = document.getElementById('p-title').value;
-  const totalQuestions = parseInt(document.getElementById('p-qs').value, 10) || 50;
+  const boardTitle = document.getElementById('p-board').value;
+  const examTitle = document.getElementById('p-title').value;
+  
+  const rawMeta = document.getElementById('p-meta').value;
+  const metaFields = rawMeta.split(',').map(f => f.trim()).filter(f => f.length > 0);
+
+  const showRollNumber = document.getElementById('p-show-roll').checked;
+  const rollNumberDigits = parseInt(document.getElementById('p-roll-digits').value, 10) || 10;
+
+  const showBookletNumber = document.getElementById('p-show-booklet').checked;
+  const bookletNumberDigits = parseInt(document.getElementById('p-booklet-digits').value, 10) || 10;
+
+  const showBarcode = document.getElementById('p-show-barcode').checked;
+  const showSeries = document.getElementById('p-show-series').checked;
+
+  const rawSeries = document.getElementById('p-series-list').value;
+  const seriesList = rawSeries.split(',').map(s => s.trim().toUpperCase()).filter(s => s.length > 0);
+  const seriesLetter = document.getElementById('p-series-val').value.trim().toUpperCase();
+
+  const totalQuestions = parseInt(document.getElementById('p-qs').value, 10) || 100;
   const optionsPerQuestion = parseInt(document.getElementById('p-opts').value, 10) || 4;
-  const columns = parseInt(document.getElementById('p-cols').value, 10) || 3;
+  const columns = parseInt(document.getElementById('p-cols').value, 10) || 5;
 
   window.OpenEduKit.generateOMR({
     containerId: 'playground-omr-output',
-    title: title,
+    boardTitle: boardTitle,
+    examTitle: examTitle,
+    logoUrl: playgroundLogoBase64,
+    metaFields: metaFields,
+    showRollNumber: showRollNumber,
+    rollNumberDigits: rollNumberDigits,
+    showBookletNumber: showBookletNumber,
+    bookletNumberDigits: bookletNumberDigits,
+    showBarcode: showBarcode,
+    showSeries: showSeries,
+    seriesList: seriesList,
+    seriesLetter: seriesLetter,
     totalQuestions: totalQuestions,
     optionsPerQuestion: optionsPerQuestion,
     columns: columns,
@@ -46,7 +72,7 @@ function buildPlaygroundOMR() {
   });
 }
 
-// 2. Quiz Playground Loader
+// Quiz Playground Loader
 const playgroundQuizData = {
   quizTitle: "OpenEduKit Ecosystem Test",
   questions: [
@@ -96,7 +122,45 @@ function resetPlaygroundQuiz() {
   }
 }
 
-// Init playground on DOM load
+// Bind live customization triggers and inputs on DOM Load
 document.addEventListener('DOMContentLoaded', () => {
+  // Bind input display toggles
+  const showRollCheck = document.getElementById('p-show-roll');
+  if (showRollCheck) {
+    showRollCheck.addEventListener('change', (e) => {
+      document.getElementById('p-roll-opt').style.display = e.target.checked ? 'flex' : 'none';
+    });
+  }
+
+  const showBookletCheck = document.getElementById('p-show-booklet');
+  if (showBookletCheck) {
+    showBookletCheck.addEventListener('change', (e) => {
+      document.getElementById('p-booklet-opt').style.display = e.target.checked ? 'flex' : 'none';
+    });
+  }
+
+  const showSeriesCheck = document.getElementById('p-show-series');
+  if (showSeriesCheck) {
+    showSeriesCheck.addEventListener('change', (e) => {
+      document.getElementById('p-series-opt').style.display = e.target.checked ? 'flex' : 'none';
+    });
+  }
+
+  // Bind logo file uploader
+  const logoFileEl = document.getElementById('p-logo-file');
+  if (logoFileEl) {
+    logoFileEl.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          playgroundLogoBase64 = evt.target.result;
+          buildPlaygroundOMR(); // Re-render preview
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+
   buildPlaygroundOMR();
 });

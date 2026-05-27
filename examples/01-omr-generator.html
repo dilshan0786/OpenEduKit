@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OpenEduKit.js - Dynamic OMR Generator Demo</title>
+  <title>OpenEduKit.js - Dynamic OMR Generator Customizer</title>
   
   <!-- Import Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,7 +14,6 @@
   <link rel="stylesheet" href="../src/openedukit.css">
   
   <style>
-    /* Styling specific to the example/dashboard shell */
     body {
       font-family: 'Outfit', sans-serif;
       background-color: #f1f5f9;
@@ -23,66 +22,113 @@
     }
     
     .shell-container {
-      max-width: 1200px;
+      max-width: 1300px;
       margin: 0 auto;
-      padding: 40px 20px;
+      padding: 30px 20px;
     }
     
     .dashboard-header {
       text-align: center;
-      margin-bottom: 40px;
+      margin-bottom: 25px;
     }
     
     .dashboard-header h1 {
-      font-size: 32px;
+      font-size: 30px;
       font-weight: 800;
       color: #0f172a;
-      margin: 0 0 10px 0;
+      margin: 0 0 8px 0;
     }
     
     .dashboard-header p {
       color: #475569;
-      font-size: 16px;
+      font-size: 15px;
       margin: 0;
+    }
+    
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: 350px 1fr;
+      gap: 30px;
+      align-items: start;
+    }
+    
+    @media (max-width: 900px) {
+      .workspace-grid {
+        grid-template-columns: 1fr;
+      }
     }
     
     .control-panel {
       background: #fff;
-      padding: 25px;
+      padding: 20px;
       border-radius: 12px;
       box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-      margin-bottom: 30px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
-      align-items: flex-end;
+      border: 1px solid #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .panel-section-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1e293b;
+      margin: 10px 0 5px 0;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
     
     .form-group {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
     }
     
     .form-group label {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
-      color: #334155;
+      color: #475569;
     }
     
-    .form-group input, .form-group select {
-      padding: 10px 14px;
+    .form-group input[type="text"], 
+    .form-group input[type="number"], 
+    .form-group select {
+      padding: 8px 12px;
       border: 1px solid #cbd5e1;
-      border-radius: 8px;
+      border-radius: 6px;
       font-family: inherit;
-      font-size: 14px;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .form-group input:focus, .form-group select:focus {
+      border-color: #3b82f6;
+    }
+
+    .form-row-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #475569;
+      margin: 5px 0;
+      cursor: pointer;
+    }
+
+    .form-row-checkbox input {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
     }
     
     .action-btn {
       background-color: #2563eb;
       color: white;
       border: none;
-      padding: 12px 24px;
+      padding: 10px 20px;
       border-radius: 8px;
       font-weight: 600;
       cursor: pointer;
@@ -92,6 +138,7 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
+      font-size: 14px;
     }
     
     .action-btn:hover {
@@ -105,20 +152,48 @@
     .action-btn.secondary:hover {
       background-color: #1e293b;
     }
-    
-    /* Highlight print styles */
-    .print-tip {
-      background-color: #eff6ff;
-      border-left: 4px solid #3b82f6;
-      padding: 15px;
-      border-radius: 0 8px 8px 0;
-      margin-bottom: 30px;
-      font-size: 14px;
-      color: #1e3a8a;
+
+    .file-input-wrapper {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
     }
 
+    .file-input-wrapper input[type=file] {
+      font-size: 100px;
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .file-input-btn {
+      border: 1px dashed #cbd5e1;
+      color: #475569;
+      background-color: #f8fafc;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+      cursor: pointer;
+      display: block;
+    }
+
+    .file-input-btn:hover {
+      background-color: #eff6ff;
+      border-color: #3b82f6;
+    }
+
+    /* Print overrides to hide customizer panel */
     @media print {
-      .shell-container, .control-panel, .dashboard-header, .print-tip {
+      .shell-container {
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: none !important;
+      }
+      .control-panel, .dashboard-header {
         display: none !important;
       }
       body {
@@ -131,69 +206,182 @@
 
   <div class="shell-container">
     <div class="dashboard-header">
-      <h1>Dynamic OMR Sheet Generator</h1>
-      <p>Configure and print fully black-and-white, ink-optimized OMR answer sheets.</p>
-    </div>
-    
-    <div class="print-tip">
-      <strong>🖨️ Printing Tip:</strong> Click the <strong>Print Sheet</strong> button or press <code>Ctrl + P</code>. In the print dialog, choose "Save as PDF" or print to paper. Make sure to set margins to <strong>None</strong> or <strong>Default</strong>, and verify that it fits clean on a single A4 page.
+      <h1>OMR Sheet Customizer Panel</h1>
+      <p>Configure layouts, metadata fields, custom logos, and export print-ready A4 OMR templates.</p>
     </div>
 
-    <div class="control-panel">
-      <div class="form-group">
-        <label for="exam-title">Exam Title</label>
-        <input type="text" id="exam-title" value="BIOLOGY CH-3 PREDICTIVE EXAM">
-      </div>
-      
-      <div class="form-group">
-        <label for="total-qs">Total Questions</label>
-        <input type="number" id="total-qs" value="90" min="1" max="200">
+    <div class="workspace-grid">
+      <!-- Left Config panel -->
+      <div class="control-panel">
+        <button id="print-btn" class="action-btn secondary">🖨️ Print / Save PDF</button>
+
+        <div class="panel-section-title">Header Config</div>
+        
+        <div class="form-group">
+          <label for="board-title">Board/Organization Header</label>
+          <input type="text" id="board-title" value="WEST BENGAL JOINT ENTRANCE EXAMINATIONS BOARD">
+        </div>
+
+        <div class="form-group">
+          <label for="exam-title">Exam Name (Title)</label>
+          <input type="text" id="exam-title" value="SAMPLE OMR SHEET">
+        </div>
+
+        <div class="form-group">
+          <label>Header Logo (Upload)</label>
+          <div class="file-input-wrapper">
+            <span class="file-input-btn">Choose Image File</span>
+            <input type="file" id="logo-file" accept="image/*">
+          </div>
+          <span id="logo-status" style="font-size: 11px; color: #64748b;">Using default logo</span>
+        </div>
+
+        <div class="panel-section-title">Candidate Meta Fields</div>
+        <div class="form-group">
+          <label for="meta-fields-input">Meta fields (Comma separated)</label>
+          <input type="text" id="meta-fields-input" value="Candidate's Name (In Block Letters), Name of the Examination Centre (In Block Letters)">
+        </div>
+
+        <div class="panel-section-title">Coding Grids</div>
+        
+        <label class="form-row-checkbox">
+          <input type="checkbox" id="show-roll" checked> Show Roll Number Grid
+        </label>
+        <div class="form-group" id="roll-digits-group">
+          <label for="roll-digits">Roll Number Digits</label>
+          <input type="number" id="roll-digits" value="10" min="1" max="15">
+        </div>
+
+        <label class="form-row-checkbox">
+          <input type="checkbox" id="show-booklet" checked> Show Booklet Number Grid
+        </label>
+        <div class="form-group" id="booklet-digits-group">
+          <label for="booklet-digits">Booklet Number Digits</label>
+          <input type="number" id="booklet-digits" value="10" min="1" max="15">
+        </div>
+
+        <label class="form-row-checkbox">
+          <input type="checkbox" id="show-barcode" checked> Show Barcode
+        </label>
+
+        <div class="panel-section-title">Series Bubbles</div>
+
+        <label class="form-row-checkbox">
+          <input type="checkbox" id="show-series" checked> Show Series Select
+        </label>
+        
+        <div id="series-custom-group" style="display: flex; flex-direction: column; gap: 10px;">
+          <div class="form-group">
+            <label for="series-list">Series Alphabet (Comma separated)</label>
+            <input type="text" id="series-list" value="A, B, C, D, E, F, G, H, I, J">
+          </div>
+          <div class="form-group">
+            <label for="series-letter">Selected Highlight Letter</label>
+            <input type="text" id="series-letter" value="A" maxlength="1">
+          </div>
+        </div>
+
+        <div class="panel-section-title">Questions Configuration</div>
+        <div class="form-group">
+          <label for="total-qs">Total Questions</label>
+          <input type="number" id="total-qs" value="100" min="5" max="200">
+        </div>
+        <div class="form-group">
+          <label for="opts-count">Options Per Question</label>
+          <input type="number" id="opts-count" value="4" min="2" max="6">
+        </div>
+        <div class="form-group">
+          <label for="cols-count">Grid Columns</label>
+          <input type="number" id="cols-count" value="5" min="1" max="6">
+        </div>
+
+        <button id="generate-btn" class="action-btn">Update Live Preview</button>
       </div>
 
-      <div class="form-group">
-        <label for="bubble-opts">Options per Q</label>
-        <select id="bubble-opts">
-          <option value="4" selected>4 Options (A, B, C, D)</option>
-          <option value="5">5 Options (A, B, C, D, E)</option>
-          <option value="3">3 Options (A, B, C)</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="layout-cols">Grid Columns</label>
-        <select id="layout-cols">
-          <option value="2">2 Columns</option>
-          <option value="3" selected>3 Columns</option>
-          <option value="4">4 Columns</option>
-        </select>
-      </div>
-
-      <button id="generate-btn" class="action-btn">Update Sheet</button>
-      <button id="print-btn" class="action-btn secondary">Print Sheet</button>
+      <!-- Right Preview area -->
+      <div id="omr-container"></div>
     </div>
-
-    <!-- Target insertion div for generated OMR -->
-    <div id="omr-container"></div>
   </div>
 
   <!-- Library Scripts -->
   <script src="../src/omr-generator.js"></script>
   
   <script>
-    function updateOMR() {
-      const title = document.getElementById('exam-title').value;
-      const totalQuestions = parseInt(document.getElementById('total-qs').value, 10);
-      const optionsPerQuestion = parseInt(document.getElementById('bubble-opts').value, 10);
-      const columns = parseInt(document.getElementById('layout-cols').value, 10);
+    let uploadedLogoBase64 = "";
 
-      // Call the OpenEduKit generator function
+    // Toggle fields based on checkbox options
+    document.getElementById('show-roll').addEventListener('change', function(e) {
+      document.getElementById('roll-digits-group').style.display = e.target.checked ? 'flex' : 'none';
+    });
+
+    document.getElementById('show-booklet').addEventListener('change', function(e) {
+      document.getElementById('booklet-digits-group').style.display = e.target.checked ? 'flex' : 'none';
+    });
+
+    document.getElementById('show-series').addEventListener('change', function(e) {
+      document.getElementById('series-custom-group').style.display = e.target.checked ? 'flex' : 'none';
+    });
+
+    // Logo file reader handler
+    document.getElementById('logo-file').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          uploadedLogoBase64 = evt.target.result;
+          document.getElementById('logo-status').textContent = "Uploaded: " + file.name;
+          updateOMR(); // Re-render preview with new logo
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    function updateOMR() {
+      const boardTitle = document.getElementById('board-title').value;
+      const examTitle = document.getElementById('exam-title').value;
+      
+      // Parse meta fields from comma-separated string
+      const rawMeta = document.getElementById('meta-fields-input').value;
+      const metaFields = rawMeta.split(',').map(f => f.trim()).filter(f => f.length > 0);
+
+      // Visibility toggles
+      const showRollNumber = document.getElementById('show-roll').checked;
+      const rollNumberDigits = parseInt(document.getElementById('roll-digits').value, 10) || 10;
+
+      const showBookletNumber = document.getElementById('show-booklet').checked;
+      const bookletNumberDigits = parseInt(document.getElementById('booklet-digits').value, 10) || 10;
+
+      const showBarcode = document.getElementById('show-barcode').checked;
+      const showSeries = document.getElementById('show-series').checked;
+
+      // Parse series options
+      const rawSeries = document.getElementById('series-list').value;
+      const seriesList = rawSeries.split(',').map(s => s.trim().toUpperCase()).filter(s => s.length > 0);
+      const seriesLetter = document.getElementById('series-letter').value.trim().toUpperCase();
+
+      // Grid stats
+      const totalQuestions = parseInt(document.getElementById('total-qs').value, 10) || 100;
+      const optionsPerQuestion = parseInt(document.getElementById('opts-count').value, 10) || 4;
+      const columns = parseInt(document.getElementById('cols-count').value, 10) || 5;
+
       window.OpenEduKit.generateOMR({
         containerId: 'omr-container',
-        title: title,
+        boardTitle: boardTitle,
+        examTitle: examTitle,
+        logoUrl: uploadedLogoBase64,
+        metaFields: metaFields,
+        showRollNumber: showRollNumber,
+        rollNumberDigits: rollNumberDigits,
+        showBookletNumber: showBookletNumber,
+        bookletNumberDigits: bookletNumberDigits,
+        showBarcode: showBarcode,
+        showSeries: showSeries,
+        seriesList: seriesList,
+        seriesLetter: seriesLetter,
         totalQuestions: totalQuestions,
         optionsPerQuestion: optionsPerQuestion,
         columns: columns,
-        interactive: true // allows user to click/bubble selection in local preview
+        interactive: true
       });
     }
 
